@@ -26,19 +26,62 @@ function renderBoard(numRows, numCols, grid) {
                     explode(grid, i, j, numRows, numCols)
                     alert("拜拜了老铁")
                     return;
-                }
-
-                if (grid[i][j].count === 0 ) {
+                }else if (grid[i][j].count === 0 ) {
                     searchClearArea(grid, i, j, numRows, numCols);
-                } else if (grid[i][j].count > 0) {
+                }else if (grid[i][j].count > 0) {
                     grid[i][j].clear = true;
                     cellEl.classList.add("clear");
                     grid[i][j].cellEl.innerText = grid[i][j].count;
                 }
-
-
                 checkAllClear(grid);
-                // cellEl.classList.add("clear");
+
+                if (checkAllClear(grid) === true){
+                    alert("干得漂亮老铁");
+                }
+
+
+            })
+            cellEl.addEventListener("mousedown",(e)=>{
+                if (e.button == 2 && grid[i][j].clear == false && grid[i][j].flag == false){
+                    grid[i][j].cellEl.classList.add("flag");
+                    grid[i][j].flag = true;
+                    sl.syls -=1;
+                }else if(e.button == 2 && grid[i][j].clear == false){
+                    grid[i][j].cellEl.classList.remove("flag");
+                    grid[i][j].flag = false;
+                    sl.syls +=1;
+                }
+                clock(sl.syls);
+            })
+    
+    
+            cellEl.addEventListener("dblclick", (e)=> {
+                if (grid[i][j].clear == true){
+                    for (let  [drow,dcol] of directions){
+                        let cellRow = i + drow;
+                        let cellCol = j + dcol;
+                        if (cellRow < 0 || cellRow >=numRows || cellCol < 0 || cellCol >= numCols){
+                            continue;
+                        }
+                        if (grid [cellRow][cellCol].flag == false && grid[cellRow][cellCol].count !=-1 && grid[cellRow][cellCol].count !=0){
+                            grid[cellRow][cellCol].clear =  true;
+                            grid[cellRow][cellCol].cellEl.classList.add("clear")
+                            grid[cellRow][cellCol].cellEl.innerText = grid[cellRow][cellCol].count;
+                        }else if (grid[cellRow][cellCol].flag == false && grid [cellRow][cellCol].count == 0){
+                            searchClearArea(grid,cellRow,cellCol,numRows,numCols);
+                        }else if (grid[cellRow][cellCol].flag == false && grid[cellRow][cellCol].count == -1){
+                            over.over = true;
+                            explode(grid,cellRow,cellCol,numRows,numCols)
+                            alert("拜拜了老铁");
+                            return;
+                        }
+                    }
+                    checkAllClear(grid)
+                    if (checkAllClear(grid) == true && over.over == false){
+                        alert("干得漂亮老铁")
+                    }
+
+                }
             });
 
             let tdEl = document.createElement("td");
@@ -63,7 +106,8 @@ function initialize(numRows, numCols, numMines) {
         for (let j = 0; j < numCols; j++) {
             grid[i][j] = {
                 clear: false,
-                count: 0
+                count: 0,
+                flag:false,
             };
         }
     }
@@ -189,7 +233,7 @@ function checkAllClear(grid) {
             cell.cellEl.classList.add("success");
         }
     }
-    alert("干得漂亮老铁")
+    
 
     return true;
 }
@@ -205,10 +249,14 @@ easy.addEventListener("click",()=>{
     if(judge.switch === false){
         let grid = initialize(9, 9, 9);
         renderBoard(9, 9, grid);
+        sl.syls = 9
     }else{
     document.getElementById("board").innerHTML=""
     let grid = initialize(9, 9, 9);
     renderBoard(9, 9, grid);
+    sl.syls = 9 ;
+    clock(sl.syls)
+
     }
     judge.switch = true;
     again.innerHTML = "重新开始"
@@ -225,11 +273,14 @@ normal.addEventListener("click",()=>{
     if(judge.switch === false){
         let grid = initialize(15, 15, 15);
         renderBoard(15, 15, grid);
+        sl.syls = 15
     }
     else{
         document.getElementById("board").innerHTML=""
         let grid = initialize(15, 15, 15);
         renderBoard(15, 15, grid);
+        sl.syls = 15
+        clock(sl.syls)
     }
     judge.switch = true;
     again.innerHTML = "重新开始"
@@ -242,14 +293,37 @@ difficult.addEventListener("click",()=>{
     if(judge.switch === false){
         let grid = initialize(20, 20, 20);
         renderBoard(20, 20, grid);
+        sl.syls = 20
+
     }
     else{
         document.getElementById("board").innerHTML=""
         let grid = initialize(20, 20, 20);
         renderBoard(20, 20, grid);
+        sl.syls = 20
+        clock(sl.syls)
+
     }
     judge.switch = true;
     again.innerHTML = "重新开始"
     again.classList.add("reload")
 })
+let over = {
+    over : false
+}
 
+
+let sl = {
+    syls:0
+}
+let tips = document.querySelector("#lb") ;
+function clock(sysl){
+    let sys = sysl;
+    if(sys < 0){
+        sys = 0;
+    }
+    let surplus_landmine = document.createElement("div");
+    surplus_landmine.innerHTML = "剩余雷数:" + sys;
+    tips.innerHTML = ""
+    tips.append(surplus_landmine);
+}

@@ -16,6 +16,18 @@ body {
     box-shadow: 2px 2px 2px #ccc;
 }
 
+.cell.flag{
+    background-color: rgb(16, 218, 49);
+    border-color:rgb(16, 218, 49) ;
+    width: 1.5 em;
+    height: 1.5 em;
+    box-shadow: 2px -1px 2px;
+    border-style: inset;
+    text-align: center;
+    user-select: none;
+}
+
+
 .cell {
     background-color: #ccc;
     width: 1.5em;
@@ -36,6 +48,9 @@ body {
 
 .cell.landmine {
     background-color: rgb(137, 150, 145);
+    background-image: url("123.jpg");
+    background-size: 1.5em 1.5em;
+
 }
 
 .cell.landmine.exploded {
